@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>音乐播放器 Demo</title>
+</head>
+<body>
+<h2>音乐列表（来自 /music/）</h2>
+<div id="music-list">加载中...</div>
+
+<script>
+    async function loadMusic() {
+        try {
+            // 请求目录列表
+            const res = await fetch("/music/");
+            const text = await res.text();
+
+            // 解析出 .flac 和 .wav 文件
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "text/html");
+            const links = Array.from(doc.querySelectorAll("a"));
+
+            const musicFiles = links
+                .map(a => a.getAttribute("href"))
+                .filter(href => href && (href.endsWith(".flac") || href.endsWith(".wav")));
+
+            const listDiv = document.getElementById("music-list");
+            listDiv.innerHTML = "";
+
+            if (musicFiles.length === 0) {
+                listDiv.textContent = "没有找到 FLAC 或 WAV 文件";
+                return;
+            }
+
+            // 动态生成播放器
+            musicFiles.forEach(file => {
+                const container = document.createElement("div");
+                container.style.marginBottom = "10px";
+
+                const label = document.createElement("p");
+                label.textContent = decodeURIComponent(file);
+
+                const audio = document.createElement("audio");
+                audio.controls = true;
+                audio.src = "/music/" + file;
+
+                container.appendChild(label);
+                container.appendChild(audio);
+                listDiv.appendChild(container);
+            });
+        } catch (e) {
+            document.getElementById("music-list").textContent = "加载失败：" + e;
+        }
+    }
+
+    loadMusic();
+</script>
+</body>
+</html>

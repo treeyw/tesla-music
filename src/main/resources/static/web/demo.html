@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>特斯拉车机音频格式检测</title>
+</head>
+<body>
+<h2>浏览器音频格式支持检测</h2>
+<div id="result"></div>
+
+<script>
+    const formats = {
+        "MP3": "audio/mpeg",
+        "AAC": "audio/aac",
+        "WAV": "audio/wav",
+        "OGG": "audio/ogg",
+        "FLAC": "audio/flac",
+        "ALAC": "audio/alac"
+    };
+
+    const audio = document.createElement("audio");
+    const resultDiv = document.getElementById("result");
+
+    for (const [name, mime] of Object.entries(formats)) {
+        const support = audio.canPlayType(mime);
+        const line = document.createElement("p");
+        line.textContent = `${name} (${mime}): ${support || "不支持"}`;
+        resultDiv.appendChild(line);
+    }
+</script>
+</body>
+</html>
